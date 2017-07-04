@@ -1,0 +1,7 @@
+{
+    "name"  : "wfxiang08/thrift_rpc_php",
+    "type"  : "project",
+    "keywords": ["thrift","rpc"],
+    "homepage": "https://github.com/wfxiang08/thrift_rpc_php",
+    "license" : "MIT"
+}
