@@ -3,5 +3,10 @@
     "type"  : "project",
     "keywords": ["thrift","rpc"],
     "homepage": "https://github.com/wfxiang08/thrift_rpc_php",
-    "license" : "MIT"
+    "license" : "MIT",
+    "autoload": {
+        "psr-4": {
+            "Thrift\\": "RpcProxy"
+        }
+    }
 }
