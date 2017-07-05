@@ -34,7 +34,9 @@ class TestCode {
     $processor = new HelloWorldProcessor($handler);
 
     // echo "Name: " . $handler->sayHello("wangfei") . "\n";
-    $client = new SMThriftWorker($processor, 'tcp://localhost', 5556);
+    // $client = new SMThriftWorker($processor, 'tcp://localhost', 5556);
+    $client = new SMThriftWorker($processor, '/usr/local/proxy/hello_backend.sock', 0);
+
     $client->run();
   }
 

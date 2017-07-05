@@ -212,7 +212,7 @@ class TSocket extends TTransport {
       echo "Host: ${host}\n";
 
       // Unix Domain Socket直接忽略 port, 强制设置为null
-      $this->port_ = -1;
+      $this->port_ = null;
       // 如果使用rpc_proxy可以直接忽略 persist_
       $this->persist_ = false;
     } else {
