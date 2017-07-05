@@ -23,27 +23,27 @@ use Thrift\Transport\TFramedTransport;
 
 class TestCode {
   function testDirectRPC() {
-    try {
-      $socket = new TSocket('localhost', 5563);
-      // $transport = new TBufferedTransport($socket, 1024, 1024);
-      $transport = new TFramedTransport($socket, true, true);
-      $protocol = new TBinaryProtocol($transport);
-      $client = new GeoIpServiceClient($protocol);
-
-      $transport->open();
-
-      $client->ping();
-      print "ping()\n";
-
-      $data = $client->IpToGeoData("120.52.139.7");
-      var_dump($data);
-
-      $transport->close();
-
-    } catch
-    (TException $tx) {
-      print 'TException: ' . $tx->getMessage() . "\n";
-    }
+//    try {
+//      $socket = new TSocket('localhost', 5563);
+//      // $transport = new TBufferedTransport($socket, 1024, 1024);
+//      $transport = new TFramedTransport($socket, true, true);
+//      $protocol = new TBinaryProtocol($transport);
+//      $client = new GeoIpServiceClient($protocol);
+//
+//      $transport->open();
+//
+//      $client->ping();
+//      print "ping()\n";
+//
+//      $data = $client->IpToGeoData("120.52.139.7");
+//      var_dump($data);
+//
+//      $transport->close();
+//
+//    } catch
+//    (TException $tx) {
+//      print 'TException: ' . $tx->getMessage() . "\n";
+//    }
   }
 
 
@@ -73,7 +73,46 @@ class TestCode {
       print 'TException: ' . $tx->getMessage() . "\n";
     }
   }
+
+  function testAsyncProxiedRPCHelloworld() {
+    try {
+
+      // 直接使用rpc proxy进行通信
+      $socket = new TSocket('tcp://localhost', 5550);
+      // $socket = new TSocket('/usr/local/rpc_proxy/proxy.sock');
+
+      $transport = new TFramedTransport($socket, true, true);
+
+      // 指定后端服务
+      $service_name = "hello";
+      $protocol = new TMultiplexedProtocol(new TBinaryProtocol($transport), $service_name);
+
+      // 创建Client
+      $client = new \Services\HelloWorld\HelloWorldClient($protocol);
+
+      $transport->open();
+
+      $client->send_sayHello("R1");
+      $client->send_sayHello("R2");
+      $client->send_sayHello("R3");
+      echo "Wait for some time\n";
+
+      $result1 = $client->recv_sayHello();
+      $result2 = $client->recv_sayHello();
+      $result3 = $client->recv_sayHello();
+      var_dump($result1);
+      var_dump($result2);
+      var_dump($result3);
+
+      $transport->close();
+
+    } catch (TException $tx) {
+      print 'TException: ' . $tx->getMessage() . "\n";
+    }
+  }
 }
 
 $test_code = new TestCode();
-$test_code->testProxiedRPCHelloworld();
+// $test_code->testProxiedRPCHelloworld();
+$test_code->testAsyncProxiedRPCHelloworld();
+
