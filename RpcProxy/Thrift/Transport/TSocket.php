@@ -65,7 +65,7 @@ class TSocket extends TTransport {
    *
    * @var int
    */
-  protected $sendTimeoutUsec_ = 100000;
+  protected $sendTimeoutUsec_ = 100000; // 100ms
 
   /**
    * Recv timeout in seconds
@@ -83,7 +83,7 @@ class TSocket extends TTransport {
    *
    * @var int
    */
-  protected $recvTimeoutUsec_ = 750000;
+  protected $recvTimeoutUsec_ = 750000; // 750ms
 
   /**
    * Persistent socket or plain?

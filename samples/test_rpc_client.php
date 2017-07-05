@@ -79,6 +79,7 @@ class TestCode {
 
       // 直接使用rpc proxy进行通信
       $socket = new TSocket('tcp://localhost', 5550);
+      $socket->setRecvTimeout(15000);
       // $socket = new TSocket('/usr/local/rpc_proxy/proxy.sock');
 
       $transport = new TFramedTransport($socket, true, true);
@@ -92,6 +93,7 @@ class TestCode {
 
       $transport->open();
 
+      $start = microtime(true);
       $client->send_sayHello("R1");
       $client->send_sayHello("R2");
       $client->send_sayHello("R3");
@@ -100,6 +102,8 @@ class TestCode {
       $result1 = $client->recv_sayHello();
       $result2 = $client->recv_sayHello();
       $result3 = $client->recv_sayHello();
+      $elapse = microtime(true) - $start;
+      echo "Elapsed: {$elapse}\n";
       var_dump($result1);
       var_dump($result2);
       var_dump($result3);
