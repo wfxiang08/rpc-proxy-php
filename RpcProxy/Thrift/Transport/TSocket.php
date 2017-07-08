@@ -120,7 +120,7 @@ class TSocket extends TTransport {
                               $debugHandler = null) {
     $this->host_ = $host;
     $this->port_ = $port;
-    echo "Host: {$host}, Port: {$port}\n";
+    // echo "Host: {$host}, Port: {$port}\n";
     $this->persist_ = $persist;
     $this->debugHandler_ = $debugHandler ? $debugHandler : 'error_log';
   }
@@ -208,9 +208,7 @@ class TSocket extends TTransport {
 
     if (strpos($this->host_, ":") === false) {
       $host = "unix://" . $this->host_;
-
-      echo "Host: ${host}\n";
-
+      // echo "Host: ${host}\n";
       // Unix Domain Socket直接忽略 port, 强制设置为null
       $this->port_ = null;
       // 如果使用rpc_proxy可以直接忽略 persist_
@@ -279,21 +277,21 @@ class TSocket extends TTransport {
     if ($readable > 0) {
       $data = fread($this->handle_, $len);
       if ($data === false) {
-        echo "Read failed failed @01\n";
+        // echo "Read failed failed @01\n";
         throw new TTransportException('TSocket: Could not read ' . $len . ' bytes from ' .
           $this->host_ . ':' . $this->port_);
       } elseif ($data == '' && feof($this->handle_)) {
-        echo "Read failed failed @02\n";
+        // echo "Read failed failed @02\n";
         throw new TTransportException('TSocket read 0 bytes');
       }
 
       return $data;
     } elseif ($readable === 0) {
-      echo "Read failed failed @03\n";
+      // echo "Read failed failed @03\n";
       throw new TTransportException('TSocket: timed out reading ' . $len . ' bytes from ' .
         $this->host_ . ':' . $this->port_);
     } else {
-      echo "Read failed failed @04\n";
+      // echo "Read failed failed @04\n";
       throw new TTransportException('TSocket: Could not read ' . $len . ' bytes from ' .
         $this->host_ . ':' . $this->port_);
     }
