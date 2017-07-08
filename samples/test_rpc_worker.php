@@ -15,7 +15,7 @@ $loader->registerDefinition('Services', THRIFT_ROOT . '/samples/');
 // 注册loader
 $loader->register();
 
-use rpc_thrift\SMThriftWorker;
+use Thrift\SMThriftWorker;
 use Services\HelloWorld\HelloWorldHandler;
 use Services\HelloWorld\HelloWorldProcessor;
 

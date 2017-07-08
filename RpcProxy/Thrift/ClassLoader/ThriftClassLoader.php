@@ -145,6 +145,7 @@ class ThriftClassLoader {
         }
 
         // 在可能的dir下寻找实现
+        // 正常文件下寻找
         foreach ($dirs as $dir) {
 
           $file = $dir . DIRECTORY_SEPARATOR . str_replace('\\', DIRECTORY_SEPARATOR, $namespace) .
@@ -189,10 +190,8 @@ class ThriftClassLoader {
             $className = $n[1];
           }
 
-          $file = $dir . DIRECTORY_SEPARATOR .
-            str_replace('\\', DIRECTORY_SEPARATOR, $namespace) .
-            DIRECTORY_SEPARATOR .
-            $className . '.php';
+          $file = $dir . DIRECTORY_SEPARATOR . str_replace('\\', DIRECTORY_SEPARATOR, $namespace) .
+            DIRECTORY_SEPARATOR . $className . '.php';
 
           if (file_exists($file)) {
             return $file;

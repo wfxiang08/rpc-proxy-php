@@ -1,19 +1,5 @@
 <?php
-
-// 引入Class Loader
-define('THRIFT_ROOT', dirname(__DIR__));
-require_once THRIFT_ROOT . '/RpcProxy/Thrift/ClassLoader/ThriftClassLoader.php';
-use Thrift\ClassLoader\ThriftClassLoader;
-
-$loader = new ThriftClassLoader();
-
-// 设置搜索路径
-$loader->registerNamespace('Thrift', THRIFT_ROOT . '/RpcProxy');
-$loader->registerNamespace('rpc_thrift', THRIFT_ROOT . '/RpcProxy');
-$loader->registerDefinition('Services', THRIFT_ROOT . '/samples/');
-
-// 注册loader
-$loader->register();
+require_once dirname(__DIR__) . '/vendor/autoload.php';
 
 use Thrift\Exception\TException;
 use Thrift\Protocol\TBinaryProtocol;

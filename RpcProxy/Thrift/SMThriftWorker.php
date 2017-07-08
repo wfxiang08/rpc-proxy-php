@@ -1,6 +1,6 @@
 <?php
 
-namespace rpc_thrift;
+namespace Thrift;
 
 // 默认Thrift之类的路径已经设置好
 use Thrift\Exception\TApplicationException;
