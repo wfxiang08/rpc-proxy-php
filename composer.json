@@ -9,7 +9,8 @@
   "license": "MIT",
   "autoload": {
     "psr-4": {
-      "Thrift\\": "RpcProxy/Thrift/"
+      "Thrift\\": "RpcProxy/Thrift/",
+      "rpc_thrift\\": "RpcProxy/rpc_thrift/"
     }
   }
 }

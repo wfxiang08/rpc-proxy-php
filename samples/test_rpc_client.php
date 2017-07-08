@@ -9,6 +9,7 @@ $loader = new ThriftClassLoader();
 
 // 设置搜索路径
 $loader->registerNamespace('Thrift', THRIFT_ROOT . '/RpcProxy');
+$loader->registerNamespace('rpc_thrift', THRIFT_ROOT . '/RpcProxy');
 $loader->registerDefinition('Services', THRIFT_ROOT . '/samples/');
 
 // 注册loader
