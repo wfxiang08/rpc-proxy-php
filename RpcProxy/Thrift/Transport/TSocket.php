@@ -245,9 +245,12 @@ class TSocket extends TTransport {
       throw new TException($error);
     }
 
-    $socket = socket_import_stream($this->handle_);
-    if ($this->port_ !== null) {
-      socket_set_option($socket, SOL_TCP, TCP_NODELAY, 1);
+    if (function_exists('socket_import_stream')) {
+      // socket_import_stream 为什么不存在呢?
+      $socket = @socket_import_stream($this->handle_);
+      if ($this->port_ !== null) {
+        socket_set_option($socket, SOL_TCP, TCP_NODELAY, 1);
+      }
     }
   }
 
