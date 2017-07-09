@@ -38,16 +38,21 @@ class TBinarySerializer {
   // be a string. Otherwise we will break the compatibility with
   // normal deserialization.
   public static function serialize($object) {
+    // 如何序列化一个对象?
+    // 1. 构建一个内存Buffer
     $transport = new TMemoryBuffer();
     $protocol = new TBinaryProtocolAccelerated($transport);
     if (function_exists('thrift_protocol_write_binary')) {
+      // 写入一个REPLY Message
       thrift_protocol_write_binary($protocol, $object->getName(),
         TMessageType::REPLY, $object,
         0, $protocol->isStrictWrite());
 
+      // 读取消息的头部, 剩下的就是一个对象序列化的数据
       $protocol->readMessageBegin($unused_name, $unused_type,
         $unused_seqid);
     } else {
+      // 直接使用普通版本的序列化
       $object->write($protocol);
     }
     $protocol->getTransport()->flush();
@@ -58,16 +63,21 @@ class TBinarySerializer {
   public static function deserialize($string_object, $class_name, $buffer_size = 8192) {
     $transport = new TMemoryBuffer();
     $protocol = new TBinaryProtocolAccelerated($transport);
+
     if (function_exists('thrift_protocol_read_binary')) {
       // NOTE (t.heintz) TBinaryProtocolAccelerated internally wraps our TMemoryBuffer in a
       // TBufferedTransport, so we have to retrieve it again or risk losing data when writing
       // less than 512 bytes to the transport (see the comment there as well).
       // @see THRIFT-1579
+      // 如何反序列化一个对象
+      // 1. 填充Message头部
       $protocol->writeMessageBegin('', TMessageType::REPLY, 0);
       $protocolTransport = $protocol->getTransport();
+      // 2. 填充string object
       $protocolTransport->write($string_object);
       $protocolTransport->flush();
 
+      // 读取整个消息(返回的是消息的主体)
       return thrift_protocol_read_binary($protocol, $class_name,
         $protocol->isStrictRead(),
         $buffer_size);
