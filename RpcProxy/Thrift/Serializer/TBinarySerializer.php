@@ -30,6 +30,8 @@ use Thrift\Type\TMessageType;
 /**
  * Utility class for serializing and deserializing
  * a thrift object using TBinaryProtocolAccelerated.
+ *
+ * 这里只是 thrift_protocol_write_binary & TBinaryProtocolAccelerated 的一个使用场景, 具体可以参考 Service实现的代码
  */
 class TBinarySerializer {
   // NOTE(rmarin): Because thrift_protocol_write_binary

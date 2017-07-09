@@ -36,7 +36,7 @@ class TSimpleServer extends TServer {
           $outputTransport = $this->outputTransportFactory_->getTransport($transport);
           $inputProtocol = $this->inputProtocolFactory_->getProtocol($inputTransport);
           $outputProtocol = $this->outputProtocolFactory_->getProtocol($outputTransport);
-          // 在一个请求的基础上不断执行读写操作
+          // XXX: 在一个请求的基础上不断执行读写操作
           // php上如何实现读写分离呢?
           while ($this->processor_->process($inputProtocol, $outputProtocol)) {
           }

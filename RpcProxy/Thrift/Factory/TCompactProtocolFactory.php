@@ -27,14 +27,11 @@ use Thrift\Protocol\TCompactProtocol;
 /**
  * Compact Protocol Factory
  */
-class TCompactProtocolFactory implements TProtocolFactory
-{
-  public function __construct()
-  {
+class TCompactProtocolFactory implements TProtocolFactory {
+  public function __construct() {
   }
 
-  public function getProtocol($trans)
-  {
+  public function getProtocol($trans) {
     return new TCompactProtocol($trans);
   }
 }

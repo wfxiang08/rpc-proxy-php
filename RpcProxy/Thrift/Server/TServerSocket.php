@@ -109,6 +109,7 @@ class TServerSocket extends TServerTransport {
     $handle = @stream_socket_accept($this->listener_, $this->acceptTimeout_ / 1000.0);
     if (!$handle) return null;
 
+    // 和不同的listen socket不同, TServerSocket得到handle之后, 需要将它封装为TSocket
     $socket = new TSocket();
     $socket->setHandle($handle);
 

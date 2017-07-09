@@ -11,6 +11,7 @@ use Thrift\Type\TType;
 use Thrift\Type\TMessageType;
 use Thrift\Protocol\TBinaryProtocolAccelerated;
 use Thrift\Exception\TApplicationException;
+
 // 定义Thrift接口(自动生成)
 // 注意:
 //     sayHello
@@ -45,9 +46,13 @@ class HelloWorldClient implements HelloWorldIf {
   public function send_sayHello($name) {
     $args = new HelloWorld_sayHello_args();
     $args->name = $name;
+
+    // TBinaryProtocolAccelerated的作用在于身份不同, 本身不需要做太多的工作
     $bin_accel = ($this->output_ instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_write_binary');
     if ($bin_accel) {
-      thrift_protocol_write_binary($this->output_, 'sayHello', TMessageType::CALL, $args, $this->seqid_, $this->output_->isStrictWrite());
+      thrift_protocol_write_binary($this->output_, 'sayHello', TMessageType::CALL,
+        $args,
+        $this->seqid_, $this->output_->isStrictWrite());
     } else {
       $this->output_->writeMessageBegin('sayHello', TMessageType::CALL, $this->seqid_);
       $args->write($this->output_);

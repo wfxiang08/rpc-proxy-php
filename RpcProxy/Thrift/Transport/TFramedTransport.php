@@ -27,7 +27,7 @@ use Thrift\Factory\TStringFuncFactory;
 /**
  * Framed transport. Writes and reads data in chunks that are stamped with
  * their length. 自带Buffer
- *
+ * 数据格式: <data_length1, data1><data_length2, data2>
  * @package thrift.transport
  */
 class TFramedTransport extends TTransport {

@@ -12,10 +12,10 @@ use Thrift\Protocol\TBinaryProtocolAccelerated;
 use Thrift\Type\TMessageType;
 use Thrift\Type\TType;
 
-
+//
+// 文件名: RpcServiceBase, 内部的类名都是以文件名开头, 例如: RpcServiceBase__If, RpcServiceBase__Client
+//
 interface RpcServiceBaseIf {
-  /**
-   */
   public function ping();
 }
 
@@ -38,6 +38,7 @@ class RpcServiceBaseClient implements \RpcThrift\Services\RpcServiceBaseIf {
 
   public function send_ping() {
     $args = new \RpcThrift\Services\RpcServiceBase_ping_args();
+
     $bin_accel = ($this->output_ instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_write_binary');
     if ($bin_accel) {
       thrift_protocol_write_binary($this->output_, 'ping', TMessageType::CALL, $args, $this->seqid_, $this->output_->isStrictWrite());
