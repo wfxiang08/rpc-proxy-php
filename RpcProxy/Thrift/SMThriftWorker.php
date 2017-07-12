@@ -33,6 +33,8 @@ class SMThriftWorker {
 
   protected $last_hb_time = 0;
 
+  public $callbacks = null;
+
   /**
    * ThriftWorker constructor.
    * @param $processor
@@ -54,12 +56,26 @@ class SMThriftWorker {
     while ($this->alive) {
       $this->connectToLb();
     }
+  }
+
+  protected function shouldStop() {
+    if ($this->callbacks === null) {
+      $result = false;
+    } else {
+      $result = call_user_func($this->callbacks);
+    }
+    if ($result === true) {
+      $this->alive = false;
+    }
+    return $result;
 
   }
 
   protected function connectToLb() {
+    echo "Try to connection to load balance: {$this->host}:{$this->port}\n";
+
     $socket = new TSocket($this->host, $this->port);
-    $socket->setRecvTimeout(5000); // 5s没有消息就timeout
+    $socket->setRecvTimeout(5000); // 5s没有消息就timeout(也不考虑复用已有的连接)
 
     try {
       $socket->open();
@@ -97,11 +113,8 @@ class SMThriftWorker {
         // 开始新的Frame
         $transport->readFrame();
 
-        // echo "Before Receive Message: {$name}, {$type}, {$seqid}\n";
         $protocol->skipReadMessage = false;
         $protocol->readMessageBegin($name, $type, $seqid);
-        // echo "Receive Message: {$name}, {$type}, {$seqid}\n";
-
         // 暂时屏蔽ReadMessage操作
         $protocol->skipReadMessage = true;
 
@@ -114,6 +127,12 @@ class SMThriftWorker {
           $transport->flush();
           $this->last_hb_time = time();
           // echo "Received Hb Signal from LB\n";
+
+          // 在心跳完毕之后, 回传递消息
+          if ($this->shouldStop()) {
+            echo "Send stop message to loadbalance...\n";
+            $this->writeStopBack($protocol, $transport);
+          }
 
         } else if ($type == self::MESSAGE_TYPE_STOP_CONFIRM) {
           $this->alive = false;
@@ -131,7 +150,7 @@ class SMThriftWorker {
             // echo "Process complete....\n";
           } catch (\Exception $ex) {
             // 序列化异常, 代码本身没有问题
-            echo "Exception: " . $ex->getTraceAsString() . "\n";
+            echo "Exception: ".$ex->getTraceAsString()."\n";
             $this->writeExceptionBack($ex, $name, $seqid, $protocol, $transport);
             continue;
           }
@@ -141,10 +160,11 @@ class SMThriftWorker {
           $transport->flush($outputBuffer->getBuffer());
 
           $start = microtime(true) - $start;
-          echo "${name} elapsed " . sprintf("%.3fms\n", $start * 1000);
+          echo "${name} elapsed ".sprintf("%.3fms\n", $start * 1000);
         }
       } catch (\Exception $ex) {
-        echo "Exception and Reconnect: " . $ex->getTraceAsString() . "\n";
+        $this->handleException($ex);
+
         // 这里出现异常, 就必须断开重连了
         $socket->close();
         sleep($this->reconnect_interval);
@@ -157,6 +177,20 @@ class SMThriftWorker {
         $protocol->skipReadMessage = false;
       }
     }
+  }
+
+  /**
+   * @param $ex \Exception
+   */
+  protected function handleException($ex) {
+    echo "Exception and Reconnect: ".$ex->getTraceAsString()."\n";
+  }
+
+  /**
+   * @param $ex \Exception
+   */
+  protected function getExceptionString($ex) {
+    return $ex->getTraceAsString();
   }
 
   /**
@@ -178,8 +212,8 @@ class SMThriftWorker {
    * @param TFramedTransport $transport
    */
   protected function writeExceptionBack($ex, $name, $seqid, $protocol, $transport) {
-    // TODO: 优化Trace
-    $msg = $ex->getTraceAsString();
+
+    $msg = $this->getExceptionString($ex);
 
     $x = new TApplicationException(TApplicationException::INVALID_PROTOCOL, $msg);
     $protocol->writeMessageBegin($name, TMessageType::EXCEPTION, $seqid);
