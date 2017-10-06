@@ -185,7 +185,7 @@ class TJSONProtocol extends TProtocol {
     $ch = $this->reader_->read();
 
     if (substr($ch, 0, 1) != $b) {
-      throw new TProtocolException("Unexpected character: " . $ch, TProtocolException::INVALID_DATA);
+      throw new TProtocolException("Unexpected character: ".$ch, TProtocolException::INVALID_DATA);
     }
   }
 
@@ -194,7 +194,7 @@ class TJSONProtocol extends TProtocol {
       $ch = substr($s, $i, 1);
 
       if (!($ch >= "a" && $ch <= "f") && !($ch >= "0" && $ch <= "9")) {
-        throw new TProtocolException("Expected hex character " . $ch, TProtocolException::INVALID_DATA);
+        throw new TProtocolException("Expected hex character ".$ch, TProtocolException::INVALID_DATA);
       }
     }
 
@@ -228,7 +228,7 @@ class TJSONProtocol extends TProtocol {
      */
     $json = preg_replace_callback('/\\\\u(d[89ab][0-9a-f]{2})\\\\u(d[cdef][0-9a-f]{2})/i',
       function ($matches) {
-        return mb_convert_encoding(pack('H*', $matches[1] . $matches[2]), 'UTF-8', 'UTF-16BE');
+        return mb_convert_encoding(pack('H*', $matches[1].$matches[2]), 'UTF-8', 'UTF-16BE');
       }, $json);
 
     /*
@@ -392,7 +392,7 @@ class TJSONProtocol extends TProtocol {
     }
 
     if (!is_numeric($str)) {
-      throw new TProtocolException("Invalid data in numeric: " . $str, TProtocolException::INVALID_DATA);
+      throw new TProtocolException("Invalid data in numeric: ".$str, TProtocolException::INVALID_DATA);
     }
 
     return intval($str);
@@ -418,7 +418,7 @@ class TJSONProtocol extends TProtocol {
     }
 
     if (!is_numeric($str)) {
-      throw new TProtocolException("Invalid data in numeric: " . $str, TProtocolException::INVALID_DATA);
+      throw new TProtocolException("Invalid data in numeric: ".$str, TProtocolException::INVALID_DATA);
     }
 
     return $str;
@@ -435,7 +435,7 @@ class TJSONProtocol extends TProtocol {
       } elseif ($arr == "Infinity") {
         return INF;
       } elseif (!$this->context_->escapeNum()) {
-        throw new TProtocolException("Numeric data unexpectedly quoted " . $arr,
+        throw new TProtocolException("Numeric data unexpectedly quoted ".$arr,
           TProtocolException::INVALID_DATA);
       }
 
@@ -454,7 +454,7 @@ class TJSONProtocol extends TProtocol {
     $data = base64_decode($arr, true);
 
     if ($data === false) {
-      throw new TProtocolException("Invalid base64 data " . $arr, TProtocolException::INVALID_DATA);
+      throw new TProtocolException("Invalid base64 data ".$arr, TProtocolException::INVALID_DATA);
     }
 
     return $data;

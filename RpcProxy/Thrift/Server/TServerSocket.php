@@ -29,7 +29,8 @@ use Thrift\Transport\TSocket;
  *
  * @package thrift.transport
  */
-class TServerSocket extends TServerTransport {
+class TServerSocket extends TServerTransport
+{
   /**
    * Handle for the listener socket
    *
@@ -61,11 +62,12 @@ class TServerSocket extends TServerTransport {
   /**
    * ServerSocket constructor
    *
-   * @param string $host Host to listen on
-   * @param int $port Port to listen on
+   * @param string $host        Host to listen on
+   * @param int $port           Port to listen on
    * @return void
    */
-  public function __construct($host = 'localhost', $port = 9090) {
+  public function __construct($host = 'localhost', $port = 9090)
+  {
     $this->host_ = $host;
     $this->port_ = $port;
   }
@@ -76,7 +78,8 @@ class TServerSocket extends TServerTransport {
    * @param int $acceptTimeout
    * @return void
    */
-  public function setAcceptTimeout($acceptTimeout) {
+  public function setAcceptTimeout($acceptTimeout)
+  {
     $this->acceptTimeout_ = $acceptTimeout;
   }
 
@@ -85,7 +88,8 @@ class TServerSocket extends TServerTransport {
    *
    * @return void
    */
-  public function listen() {
+  public function listen()
+  {
     $this->listener_ = stream_socket_server('tcp://' . $this->host_ . ':' . $this->port_);
   }
 
@@ -94,7 +98,8 @@ class TServerSocket extends TServerTransport {
    *
    * @return void
    */
-  public function close() {
+  public function close()
+  {
     @fclose($this->listener_);
     $this->listener_ = null;
   }
@@ -104,12 +109,11 @@ class TServerSocket extends TServerTransport {
    *
    * @return TSocket
    */
-  protected function acceptImpl() {
-    // 接受来自client的请求
+  protected function acceptImpl()
+  {
     $handle = @stream_socket_accept($this->listener_, $this->acceptTimeout_ / 1000.0);
-    if (!$handle) return null;
+    if(!$handle) return null;
 
-    // 和不同的listen socket不同, TServerSocket得到handle之后, 需要将它封装为TSocket
     $socket = new TSocket();
     $socket->setHandle($handle);
 

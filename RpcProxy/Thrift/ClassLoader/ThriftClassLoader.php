@@ -67,7 +67,6 @@ class ThriftClassLoader {
    * @param array|string $paths The location(s) of the namespace
    */
   public function registerNamespace($namespace, $paths) {
-    // 指定namespace到什么路径下去寻找实现
     $this->namespaces[$namespace] = (array)$paths;
   }
 
@@ -87,7 +86,6 @@ class ThriftClassLoader {
    * @param Boolean $prepend Whether to prepend the autoloader or not
    */
   public function register($prepend = false) {
-    // 注册autoload的实现
     spl_autoload_register(array($this, 'loadClass'), true, $prepend);
   }
 
@@ -97,8 +95,6 @@ class ThriftClassLoader {
    * @param string $class The name of the class
    */
   public function loadClass($class) {
-    // 如何加载Class呢?
-    // $class --> $file --> require_once
     if (
       (true === $this->apc && ($file = $this->findFileInApc($class))) or
       ($file = $this->findFile($class))
@@ -113,8 +109,8 @@ class ThriftClassLoader {
    * @return string
    */
   protected function findFileInApc($class) {
-    if (false === $file = apc_fetch($this->apc_prefix . $class)) {
-      apc_store($this->apc_prefix . $class, $file = $this->findFile($class));
+    if (false === $file = apc_fetch($this->apc_prefix.$class)) {
+      apc_store($this->apc_prefix.$class, $file = $this->findFile($class));
     }
 
     return $file;
@@ -132,10 +128,8 @@ class ThriftClassLoader {
     }
 
     if (false !== $pos = strrpos($class, '\\')) {
-      // 寻找namespace的第一部分
       // Namespaced class name
       $namespace = substr($class, 0, $pos);
-      $className = substr($class, $pos + 1);
 
       // Iterate in normal namespaces
       foreach ($this->namespaces as $ns => $dirs) {
@@ -144,12 +138,13 @@ class ThriftClassLoader {
           continue;
         }
 
-        // 在可能的dir下寻找实现
-        // 正常文件下寻找
         foreach ($dirs as $dir) {
+          $className = substr($class, $pos + 1);
 
-          $file = $dir . DIRECTORY_SEPARATOR . str_replace('\\', DIRECTORY_SEPARATOR, $namespace) .
-            DIRECTORY_SEPARATOR . $className . '.php';
+          $file = $dir.DIRECTORY_SEPARATOR.
+            str_replace('\\', DIRECTORY_SEPARATOR, $namespace).
+            DIRECTORY_SEPARATOR.
+            $className.'.php';
 
           if (file_exists($file)) {
             return $file;
@@ -164,7 +159,7 @@ class ThriftClassLoader {
 
       // Ignore wrong call
       if (count($m) <= 1) {
-        return null;
+        return;
       }
 
       $class = array_pop($m);
@@ -190,8 +185,10 @@ class ThriftClassLoader {
             $className = $n[1];
           }
 
-          $file = $dir . DIRECTORY_SEPARATOR . str_replace('\\', DIRECTORY_SEPARATOR, $namespace) .
-            DIRECTORY_SEPARATOR . $className . '.php';
+          $file = $dir.DIRECTORY_SEPARATOR.
+            str_replace('\\', DIRECTORY_SEPARATOR, $namespace).
+            DIRECTORY_SEPARATOR.
+            $className.'.php';
 
           if (file_exists($file)) {
             return $file;
@@ -199,6 +196,5 @@ class ThriftClassLoader {
         }
       }
     }
-    return null;
   }
 }

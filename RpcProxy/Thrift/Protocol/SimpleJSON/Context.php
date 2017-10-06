@@ -22,12 +22,15 @@
 
 namespace Thrift\Protocol\SimpleJSON;
 
-class Context {
-  public function write() {
-  }
+class Context
+{
+    public function write()
+    {
+    }
 
-  public function isMapKey() {
-    return false;
-  }
+    public function isMapKey()
+    {
+        return false;
+    }
 }
 

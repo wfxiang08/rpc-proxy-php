@@ -71,7 +71,7 @@ class TSimpleJSONProtocol extends TProtocol {
   protected function assertContextIsNotMapKey($invalidKeyType) {
     if ($this->writeContext_->isMapKey()) {
       throw new CollectionMapKeyException(
-        "Cannot serialize a map with keys that are of type " .
+        "Cannot serialize a map with keys that are of type ".
         $invalidKeyType
       );
     }

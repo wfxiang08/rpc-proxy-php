@@ -65,12 +65,12 @@ abstract class TBase {
     $vtype = $spec['vtype'];
     $kread = $vread = null;
     if (isset(TBase::$tmethod[$ktype])) {
-      $kread = 'read' . TBase::$tmethod[$ktype];
+      $kread = 'read'.TBase::$tmethod[$ktype];
     } else {
       $kspec = $spec['key'];
     }
     if (isset(TBase::$tmethod[$vtype])) {
-      $vread = 'read' . TBase::$tmethod[$vtype];
+      $vread = 'read'.TBase::$tmethod[$vtype];
     } else {
       $vspec = $spec['val'];
     }
@@ -131,7 +131,7 @@ abstract class TBase {
     $etype = $spec['etype'];
     $eread = $vread = null;
     if (isset(TBase::$tmethod[$etype])) {
-      $eread = 'read' . TBase::$tmethod[$etype];
+      $eread = 'read'.TBase::$tmethod[$etype];
     } else {
       $espec = $spec['elem'];
     }
@@ -197,7 +197,7 @@ abstract class TBase {
         if ($ftype == $fspec['type']) {
           $xfer = 0;
           if (isset(TBase::$tmethod[$ftype])) {
-            $func = 'read' . TBase::$tmethod[$ftype];
+            $func = 'read'.TBase::$tmethod[$ftype];
             $xfer += $input->$func($this->$var);
           } else {
             switch ($ftype) {
@@ -236,12 +236,12 @@ abstract class TBase {
     $vtype = $spec['vtype'];
     $kwrite = $vwrite = null;
     if (isset(TBase::$tmethod[$ktype])) {
-      $kwrite = 'write' . TBase::$tmethod[$ktype];
+      $kwrite = 'write'.TBase::$tmethod[$ktype];
     } else {
       $kspec = $spec['key'];
     }
     if (isset(TBase::$tmethod[$vtype])) {
-      $vwrite = 'write' . TBase::$tmethod[$vtype];
+      $vwrite = 'write'.TBase::$tmethod[$vtype];
     } else {
       $vspec = $spec['val'];
     }
@@ -294,7 +294,7 @@ abstract class TBase {
     $etype = $spec['etype'];
     $ewrite = null;
     if (isset(TBase::$tmethod[$etype])) {
-      $ewrite = 'write' . TBase::$tmethod[$etype];
+      $ewrite = 'write'.TBase::$tmethod[$etype];
     } else {
       $espec = $spec['elem'];
     }
@@ -342,7 +342,7 @@ abstract class TBase {
         $ftype = $fspec['type'];
         $xfer += $output->writeFieldBegin($var, $ftype, $fid);
         if (isset(TBase::$tmethod[$ftype])) {
-          $func = 'write' . TBase::$tmethod[$ftype];
+          $func = 'write'.TBase::$tmethod[$ftype];
           $xfer += $output->$func($this->$var);
         } else {
           switch ($ftype) {

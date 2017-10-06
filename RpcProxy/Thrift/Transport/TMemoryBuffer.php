@@ -62,8 +62,8 @@ class TMemoryBuffer extends TTransport {
     $bufLength = TStringFuncFactory::create()->strlen($this->buf_);
 
     if ($bufLength === 0) {
-      throw new TTransportException('TMemoryBuffer: Could not read ' .
-        $len . ' bytes from buffer.',
+      throw new TTransportException('TMemoryBuffer: Could not read '.
+        $len.' bytes from buffer.',
         TTransportException::UNKNOWN);
     }
 
@@ -89,6 +89,6 @@ class TMemoryBuffer extends TTransport {
   }
 
   public function putBack($data) {
-    $this->buf_ = $data . $this->buf_;
+    $this->buf_ = $data.$this->buf_;
   }
 }

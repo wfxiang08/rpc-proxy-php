@@ -30,7 +30,8 @@ use Thrift\Factory\TStringFuncFactory;
  *
  * @package thrift.transport
  */
-class TCurlClient extends TTransport {
+class TCurlClient extends TTransport
+{
   private static $curlHandle;
 
   /**
@@ -83,22 +84,16 @@ class TCurlClient extends TTransport {
   protected $timeout_;
 
   /**
-   * http headers
-   *
-   * @var array
-   */
-  protected $headers_;
-
-  /**
    * Make a new HTTP client.
    *
    * @param string $host
-   * @param int $port
+   * @param int    $port
    * @param string $uri
    */
-  public function __construct($host, $port = 80, $uri = '', $scheme = 'http') {
+  public function __construct($host, $port=80, $uri='', $scheme = 'http')
+  {
     if ((TStringFuncFactory::create()->strlen($uri) > 0) && ($uri{0} != '/')) {
-      $uri = '/' . $uri;
+      $uri = '/'.$uri;
     }
     $this->scheme_ = $scheme;
     $this->host_ = $host;
@@ -107,7 +102,6 @@ class TCurlClient extends TTransport {
     $this->request_ = '';
     $this->response_ = null;
     $this->timeout_ = null;
-    $this->headers_ = array();
   }
 
   /**
@@ -115,7 +109,8 @@ class TCurlClient extends TTransport {
    *
    * @param float $timeout
    */
-  public function setTimeoutSecs($timeout) {
+  public function setTimeoutSecs($timeout)
+  {
     $this->timeout_ = $timeout;
   }
 
@@ -124,7 +119,8 @@ class TCurlClient extends TTransport {
    *
    * @return boolean true if open
    */
-  public function isOpen() {
+  public function isOpen()
+  {
     return true;
   }
 
@@ -133,13 +129,15 @@ class TCurlClient extends TTransport {
    *
    * @throws TTransportException if cannot open
    */
-  public function open() {
+  public function open()
+  {
   }
 
   /**
    * Close the transport.
    */
-  public function close() {
+  public function close()
+  {
     $this->request_ = '';
     $this->response_ = null;
   }
@@ -147,11 +145,12 @@ class TCurlClient extends TTransport {
   /**
    * Read some data into the array.
    *
-   * @param int $len How much to read
+   * @param int    $len How much to read
    * @return string The data that has been read
    * @throws TTransportException if cannot read any more data
    */
-  public function read($len) {
+  public function read($len)
+  {
     if ($len >= strlen($this->response_)) {
       return $this->response_;
     } else {
@@ -165,10 +164,11 @@ class TCurlClient extends TTransport {
   /**
    * Writes some data into the pending buffer
    *
-   * @param string $buf The data to write
+   * @param string $buf  The data to write
    * @throws TTransportException if writing fails
    */
-  public function write($buf) {
+  public function write($buf)
+  {
     $this->request_ .= $buf;
   }
 
@@ -177,7 +177,8 @@ class TCurlClient extends TTransport {
    *
    * @throws TTransportException if a writing error occurs
    */
-  public function flush() {
+  public function flush()
+  {
     if (!self::$curlHandle) {
       register_shutdown_function(array('Thrift\\Transport\\TCurlClient', 'closeCurlHandle'));
       self::$curlHandle = curl_init();
@@ -189,17 +190,12 @@ class TCurlClient extends TTransport {
       curl_setopt(self::$curlHandle, CURLOPT_MAXREDIRS, 1);
     }
     // God, PHP really has some esoteric ways of doing simple things.
-    $host = $this->host_ . ($this->port_ != 80 ? ':' . $this->port_ : '');
-    $fullUrl = $this->scheme_ . "://" . $host . $this->uri_;
+    $host = $this->host_.($this->port_ != 80 ? ':'.$this->port_ : '');
+    $fullUrl = $this->scheme_."://".$host.$this->uri_;
 
-    $headers = array();
-    $defaultHeaders = array('Accept' => 'application/x-thrift',
-      'Content-Type' => 'application/x-thrift',
-      'Content-Length' => TStringFuncFactory::create()->strlen($this->request_));
-    foreach (array_merge($defaultHeaders, $this->headers_) as $key => $value) {
-      $headers[] = "$key: $value";
-    }
-
+    $headers = array('Accept: application/x-thrift',
+                     'Content-Type: application/x-thrift',
+                     'Content-Length: '.TStringFuncFactory::create()->strlen($this->request_));
     curl_setopt(self::$curlHandle, CURLOPT_HTTPHEADER, $headers);
 
     if ($this->timeout_ > 0) {
@@ -215,12 +211,13 @@ class TCurlClient extends TTransport {
     if (!$this->response_) {
       curl_close(self::$curlHandle);
       self::$curlHandle = null;
-      $error = 'TCurlClient: Could not connect to ' . $fullUrl;
+      $error = 'TCurlClient: Could not connect to '.$fullUrl;
       throw new TTransportException($error, TTransportException::NOT_OPEN);
     }
   }
 
-  public static function closeCurlHandle() {
+  public static function closeCurlHandle()
+  {
     try {
       if (self::$curlHandle) {
         curl_close(self::$curlHandle);
@@ -229,10 +226,6 @@ class TCurlClient extends TTransport {
     } catch (\Exception $x) {
       error_log('There was an error closing the curl handle: ' . $x->getMessage());
     }
-  }
-
-  public function addHeaders($headers) {
-    $this->headers_ = array_merge($this->headers_, $headers);
   }
 
 }

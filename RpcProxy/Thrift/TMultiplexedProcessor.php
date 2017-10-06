@@ -95,12 +95,12 @@ class TMultiplexedProcessor {
 
     // Extract the service name and the new Message name.
     if (strpos($fname, TMultiplexedProtocol::SEPARATOR) === false) {
-      throw new TException("Service name not found in message name: {$fname}. Did you " .
+      throw new TException("Service name not found in message name: {$fname}. Did you ".
         "forget to use a TMultiplexProtocol in your client?");
     }
     list($serviceName, $messageName) = explode(':', $fname, 2);
     if (!array_key_exists($serviceName, $this->serviceProcessorMap_)) {
-      throw new TException("Service name not found: {$serviceName}.  Did you forget " .
+      throw new TException("Service name not found: {$serviceName}.  Did you forget ".
         "to call registerProcessor()?");
     }
 

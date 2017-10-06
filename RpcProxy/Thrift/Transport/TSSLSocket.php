@@ -31,7 +31,8 @@ use Thrift\Factory\TStringFuncFactory;
  *
  * @package thrift.transport
  */
-class TSSLSocket extends TSocket {
+class TSSLSocket extends TSocket
+{
   /**
    * Remote port
    *
@@ -42,16 +43,16 @@ class TSSLSocket extends TSocket {
   /**
    * Socket constructor
    *
-   * @param string $host Remote hostname
-   * @param int $port Remote port
-   * @param resource $context Stream context
-   * @param bool $persist Whether to use a persistent socket
-   * @param string $debugHandler Function to call for error logging
+   * @param string     $host         Remote hostname
+   * @param int        $port         Remote port
+   * @param resource   $context      Stream context
+   * @param bool       $persist      Whether to use a persistent socket
+   * @param string     $debugHandler Function to call for error logging
    */
-  public function __construct($host = 'localhost',
-                              $port = 9090,
-                              $context = null,
-                              $debugHandler = null) {
+  public function __construct($host='localhost',
+                              $port=9090,
+                              $context=null,
+                              $debugHandler=null) {
     $this->host_ = $this->getSSLHost($host);
     $this->port_ = $port;
     $this->context_ = $context;
@@ -63,13 +64,14 @@ class TSSLSocket extends TSocket {
    * if no transport protocol already specified in
    * the host name.
    *
-   * @param string $host Host to listen on
+   * @param string $host    Host to listen on
    * @return string $host   Host name with transport protocol
    */
-  private function getSSLHost($host) {
+  private function getSSLHost($host)
+  {
     $transport_protocol_loc = strpos($host, "://");
     if ($transport_protocol_loc === false) {
-      $host = 'ssl://' . $host;
+      $host = 'ssl://'.$host;
     }
     return $host;
   }
@@ -77,7 +79,8 @@ class TSSLSocket extends TSocket {
   /**
    * Connects the socket.
    */
-  public function open() {
+  public function open()
+  {
     if ($this->isOpen()) {
       throw new TTransportException('Socket already connected', TTransportException::ALREADY_OPEN);
     }
@@ -90,16 +93,16 @@ class TSSLSocket extends TSocket {
       throw new TTransportException('Cannot open without port', TTransportException::NOT_OPEN);
     }
 
-    $this->handle_ = @stream_socket_client($this->host_ . ':' . $this->port_,
-      $errno,
-      $errstr,
-      $this->sendTimeoutSec_ + ($this->sendTimeoutUsec_ / 1000000),
-      STREAM_CLIENT_CONNECT,
-      $this->context_);
+    $this->handle_ = @stream_socket_client($this->host_.':'.$this->port_,
+                                          $errno,
+                                          $errstr,
+                                          $this->sendTimeoutSec_ + ($this->sendTimeoutUsec_ / 1000000),
+                                          STREAM_CLIENT_CONNECT,
+                                          $this->context_);
 
     // Connect failed?
     if ($this->handle_ === FALSE) {
-      $error = 'TSocket: Could not connect to ' . $this->host_ . ':' . $this->port_ . ' (' . $errstr . ' [' . $errno . '])';
+      $error = 'TSocket: Could not connect to '.$this->host_.':'.$this->port_.' ('.$errstr.' ['.$errno.'])';
       if ($this->debug_) {
         call_user_func($this->debugHandler_, $error);
       }
