@@ -206,18 +206,27 @@ class TSocket extends TTransport {
       throw new TTransportException('Cannot open null host', TTransportException::NOT_OPEN);
     }
 
-    if ($this->port_ <= 0) {
-      throw new TTransportException('Cannot open without port', TTransportException::NOT_OPEN);
+    $host = $this->host_;
+    if (strpos($this->host_, ":") === false) {
+      $host = "unix://".$this->host_;
+      // echo "Host: ${host}\n";
+      // Unix Domain Socket直接忽略 port, 强制设置为null
+      $this->port_ = null;
+    } else {
+      $this->port_ = (int)$this->port_;
+      if ($this->port_ <= 0) {
+        throw new TTransportException('Cannot open without port', TTransportException::NOT_OPEN);
+      }
     }
 
     if ($this->persist_) {
-      $this->handle_ = @pfsockopen($this->host_,
+      $this->handle_ = @pfsockopen($host,
         $this->port_,
         $errno,
         $errstr,
         $this->sendTimeoutSec_ + ($this->sendTimeoutUsec_ / 1000000));
     } else {
-      $this->handle_ = @fsockopen($this->host_,
+      $this->handle_ = @fsockopen($host,
         $this->port_,
         $errno,
         $errstr,
