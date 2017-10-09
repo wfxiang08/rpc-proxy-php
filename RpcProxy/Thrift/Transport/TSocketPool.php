@@ -31,13 +31,8 @@ use Thrift\Exception\TException;
  * misses.
  */
 if (!function_exists('apc_fetch')) {
-  function apc_fetch($key) {
-    return FALSE;
-  }
-
-  function apc_store($key, $var, $ttl = 0) {
-    return FALSE;
-  }
+  function apc_fetch($key) { return FALSE; }
+  function apc_store($key, $var, $ttl=0) { return FALSE; }
 }
 
 /**
@@ -46,7 +41,8 @@ if (!function_exists('apc_fetch')) {
  *
  * @package thrift.transport
  */
-class TSocketPool extends TSocket {
+class TSocketPool extends TSocket
+{
   /**
    * Remote servers. Array of associative arrays with 'host' and 'port' keys
    */
@@ -91,15 +87,15 @@ class TSocketPool extends TSocket {
   /**
    * Socket pool constructor
    *
-   * @param array $hosts List of remote hostnames
-   * @param mixed $ports Array of remote ports, or a single common port
-   * @param bool $persist Whether to use a persistent socket
-   * @param mixed $debugHandler Function for error logging
+   * @param array  $hosts        List of remote hostnames
+   * @param mixed  $ports        Array of remote ports, or a single common port
+   * @param bool   $persist      Whether to use a persistent socket
+   * @param mixed  $debugHandler Function for error logging
    */
-  public function __construct($hosts = array('localhost'),
-                              $ports = array(9090),
-                              $persist = false,
-                              $debugHandler = null) {
+  public function __construct($hosts=array('localhost'),
+                              $ports=array(9090),
+                              $persist=false,
+                              $debugHandler=null) {
     parent::__construct(null, 0, $persist, $debugHandler);
 
     if (!is_array($ports)) {
@@ -111,8 +107,8 @@ class TSocketPool extends TSocket {
     }
 
     foreach ($hosts as $key => $host) {
-      $this->servers_ [] = array('host' => $host,
-        'port' => $ports[$key]);
+      $this->servers_ []= array('host' => $host,
+                                'port' => $ports[$key]);
     }
   }
 
@@ -124,7 +120,8 @@ class TSocketPool extends TSocket {
    * @param string $host hostname or IP
    * @param int $port port
    */
-  public function addServer($host, $port) {
+  public function addServer($host, $port)
+  {
     $this->servers_[] = array('host' => $host, 'port' => $port);
   }
 
@@ -133,7 +130,8 @@ class TSocketPool extends TSocket {
    *
    * @param int $numRetries
    */
-  public function setNumRetries($numRetries) {
+  public function setNumRetries($numRetries)
+  {
     $this->numRetries_ = $numRetries;
   }
 
@@ -142,7 +140,8 @@ class TSocketPool extends TSocket {
    *
    * @param int $numRetries
    */
-  public function setRetryInterval($retryInterval) {
+  public function setRetryInterval($retryInterval)
+  {
     $this->retryInterval_ = $retryInterval;
   }
 
@@ -151,7 +150,8 @@ class TSocketPool extends TSocket {
    *
    * @param int $numRetries
    */
-  public function setMaxConsecutiveFailures($maxConsecutiveFailures) {
+  public function setMaxConsecutiveFailures($maxConsecutiveFailures)
+  {
     $this->maxConsecutiveFailures_ = $maxConsecutiveFailures;
   }
 
@@ -160,7 +160,8 @@ class TSocketPool extends TSocket {
    *
    * @param bool $randomize
    */
-  public function setRandomize($randomize) {
+  public function setRandomize($randomize)
+  {
     $this->randomize_ = $randomize;
   }
 
@@ -169,7 +170,8 @@ class TSocketPool extends TSocket {
    *
    * @param bool $alwaysTryLast
    */
-  public function setAlwaysTryLast($alwaysTryLast) {
+  public function setAlwaysTryLast($alwaysTryLast)
+  {
     $this->alwaysTryLast_ = $alwaysTryLast;
   }
 
@@ -177,7 +179,8 @@ class TSocketPool extends TSocket {
    * Connects the socket by iterating through all the servers in the pool
    * and trying to find one that works.
    */
-  public function open() {
+  public function open()
+  {
     // Check if we want order randomization
     if ($this->randomize_) {
       shuffle($this->servers_);
@@ -192,7 +195,7 @@ class TSocketPool extends TSocket {
       extract($this->servers_[$i]);
 
       // Check APC cache for a record of this server being down
-      $failtimeKey = 'thrift_failtime:' . $host . ':' . $port . '~';
+      $failtimeKey = 'thrift_failtime:'.$host.':'.$port.'~';
 
       // Cache miss? Assume it's OK
       $lastFailtime = apc_fetch($failtimeKey);
@@ -209,9 +212,9 @@ class TSocketPool extends TSocket {
           $retryIntervalPassed = true;
           if ($this->debug_) {
             call_user_func($this->debugHandler_,
-              'TSocketPool: retryInterval ' .
-              '(' . $this->retryInterval_ . ') ' .
-              'has passed for host ' . $host . ':' . $port);
+                           'TSocketPool: retryInterval '.
+                           '('.$this->retryInterval_.') '.
+                           'has passed for host '.$host.':'.$port);
           }
         }
       }
@@ -224,9 +227,8 @@ class TSocketPool extends TSocket {
       }
 
       if (($lastFailtime === 0) ||
-        ($isLastServer) ||
-        ($lastFailtime > 0 && $retryIntervalPassed)
-      ) {
+          ($isLastServer) ||
+          ($lastFailtime > 0 && $retryIntervalPassed)) {
 
         // Set underlying TSocket params to this one
         $this->host_ = $host;
@@ -252,7 +254,7 @@ class TSocketPool extends TSocket {
         }
 
         // Mark failure of this host in the cache
-        $consecfailsKey = 'thrift_consecfails:' . $host . ':' . $port . '~';
+        $consecfailsKey = 'thrift_consecfails:'.$host.':'.$port.'~';
 
         // Ignore cache misses
         $consecfails = apc_fetch($consecfailsKey);
@@ -267,9 +269,9 @@ class TSocketPool extends TSocket {
         if ($consecfails >= $this->maxConsecutiveFailures_) {
           if ($this->debug_) {
             call_user_func($this->debugHandler_,
-              'TSocketPool: marking ' . $host . ':' . $port .
-              ' as down for ' . $this->retryInterval_ . ' secs ' .
-              'after ' . $consecfails . ' failed attempts.');
+                           'TSocketPool: marking '.$host.':'.$port.
+                           ' as down for '.$this->retryInterval_.' secs '.
+                           'after '.$consecfails.' failed attempts.');
           }
           // Store the failure time
           apc_store($failtimeKey, time());
@@ -286,10 +288,10 @@ class TSocketPool extends TSocket {
     $error = 'TSocketPool: All hosts in pool are down. ';
     $hosts = array();
     foreach ($this->servers_ as $server) {
-      $hosts [] = $server['host'] . ':' . $server['port'];
+      $hosts []= $server['host'].':'.$server['port'];
     }
     $hostlist = implode(',', $hosts);
-    $error .= '(' . $hostlist . ')';
+    $error .= '('.$hostlist.')';
     if ($this->debug_) {
       call_user_func($this->debugHandler_, $error);
     }

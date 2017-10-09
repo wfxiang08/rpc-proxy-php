@@ -241,16 +241,19 @@ class TSocket extends TTransport {
       }
       throw new TException($error);
     }
+
+    if (function_exists('socket_import_stream') && function_exists('socket_set_option')) {
+      $socket = socket_import_stream($this->handle_);
+      socket_set_option($socket, SOL_TCP, TCP_NODELAY, 1);
+    }
   }
 
   /**
    * Closes the socket.
    */
   public function close() {
-    if (!$this->persist_) {
-      @fclose($this->handle_);
-      $this->handle_ = null;
-    }
+    @fclose($this->handle_);
+    $this->handle_ = null;
   }
 
   /**

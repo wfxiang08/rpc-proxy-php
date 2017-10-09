@@ -31,20 +31,22 @@ use Thrift\Type\TType;
  * of PHP. Note that code is intentionally duplicated in here to avoid making
  * function calls for every field or member of a container..
  */
-abstract class TBase {
-  static $tmethod = array(TType::BOOL => 'Bool',
-    TType::BYTE => 'Byte',
-    TType::I16 => 'I16',
-    TType::I32 => 'I32',
-    TType::I64 => 'I64',
-    TType::DOUBLE => 'Double',
-    TType::STRING => 'String');
+abstract class TBase
+{
+  static $tmethod = array(TType::BOOL   => 'Bool',
+                          TType::BYTE   => 'Byte',
+                          TType::I16    => 'I16',
+                          TType::I32    => 'I32',
+                          TType::I64    => 'I64',
+                          TType::DOUBLE => 'Double',
+                          TType::STRING => 'String');
 
   abstract public function read($input);
 
   abstract public function write($output);
 
-  public function __construct($spec = null, $vals = null) {
+  public function __construct($spec=null, $vals=null)
+  {
     if (is_array($spec) && is_array($vals)) {
       foreach ($spec as $fid => $fspec) {
         $var = $fspec['var'];
@@ -55,11 +57,13 @@ abstract class TBase {
     }
   }
 
-  public function __wakeup() {
+  public function __wakeup()
+  {
     $this->__construct(get_object_vars($this));
   }
 
-  private function _readMap(&$var, $spec, $input) {
+  private function _readMap(&$var, $spec, $input)
+  {
     $xfer = 0;
     $ktype = $spec['ktype'];
     $vtype = $spec['vtype'];
@@ -83,40 +87,40 @@ abstract class TBase {
         $xfer += $input->$kread($key);
       } else {
         switch ($ktype) {
-          case TType::STRUCT:
-            $class = $kspec['class'];
-            $key = new $class();
-            $xfer += $key->read($input);
-            break;
-          case TType::MAP:
-            $xfer += $this->_readMap($key, $kspec, $input);
-            break;
-          case TType::LST:
-            $xfer += $this->_readList($key, $kspec, $input, false);
-            break;
-          case TType::SET:
-            $xfer += $this->_readList($key, $kspec, $input, true);
-            break;
+        case TType::STRUCT:
+          $class = $kspec['class'];
+          $key = new $class();
+          $xfer += $key->read($input);
+          break;
+        case TType::MAP:
+          $xfer += $this->_readMap($key, $kspec, $input);
+          break;
+        case TType::LST:
+          $xfer += $this->_readList($key, $kspec, $input, false);
+          break;
+        case TType::SET:
+          $xfer += $this->_readList($key, $kspec, $input, true);
+          break;
         }
       }
       if ($vread !== null) {
         $xfer += $input->$vread($val);
       } else {
         switch ($vtype) {
-          case TType::STRUCT:
-            $class = $vspec['class'];
-            $val = new $class();
-            $xfer += $val->read($input);
-            break;
-          case TType::MAP:
-            $xfer += $this->_readMap($val, $vspec, $input);
-            break;
-          case TType::LST:
-            $xfer += $this->_readList($val, $vspec, $input, false);
-            break;
-          case TType::SET:
-            $xfer += $this->_readList($val, $vspec, $input, true);
-            break;
+        case TType::STRUCT:
+          $class = $vspec['class'];
+          $val = new $class();
+          $xfer += $val->read($input);
+          break;
+        case TType::MAP:
+          $xfer += $this->_readMap($val, $vspec, $input);
+          break;
+        case TType::LST:
+          $xfer += $this->_readList($val, $vspec, $input, false);
+          break;
+        case TType::SET:
+          $xfer += $this->_readList($val, $vspec, $input, true);
+          break;
         }
       }
       $var[$key] = $val;
@@ -126,7 +130,8 @@ abstract class TBase {
     return $xfer;
   }
 
-  private function _readList(&$var, $spec, $input, $set = false) {
+  private function _readList(&$var, $spec, $input, $set=false)
+  {
     $xfer = 0;
     $etype = $spec['etype'];
     $eread = $vread = null;
@@ -149,26 +154,26 @@ abstract class TBase {
       } else {
         $espec = $spec['elem'];
         switch ($etype) {
-          case TType::STRUCT:
-            $class = $espec['class'];
-            $elem = new $class();
-            $xfer += $elem->read($input);
-            break;
-          case TType::MAP:
-            $xfer += $this->_readMap($elem, $espec, $input);
-            break;
-          case TType::LST:
-            $xfer += $this->_readList($elem, $espec, $input, false);
-            break;
-          case TType::SET:
-            $xfer += $this->_readList($elem, $espec, $input, true);
-            break;
+        case TType::STRUCT:
+          $class = $espec['class'];
+          $elem = new $class();
+          $xfer += $elem->read($input);
+          break;
+        case TType::MAP:
+          $xfer += $this->_readMap($elem, $espec, $input);
+          break;
+        case TType::LST:
+          $xfer += $this->_readList($elem, $espec, $input, false);
+          break;
+        case TType::SET:
+          $xfer += $this->_readList($elem, $espec, $input, true);
+          break;
         }
       }
       if ($set) {
         $var[$elem] = true;
       } else {
-        $var [] = $elem;
+        $var []= $elem;
       }
     }
     if ($set) {
@@ -180,7 +185,8 @@ abstract class TBase {
     return $xfer;
   }
 
-  protected function _read($class, $spec, $input) {
+  protected function _read($class, $spec, $input)
+  {
     $xfer = 0;
     $fname = null;
     $ftype = 0;
@@ -201,20 +207,20 @@ abstract class TBase {
             $xfer += $input->$func($this->$var);
           } else {
             switch ($ftype) {
-              case TType::STRUCT:
-                $class = $fspec['class'];
-                $this->$var = new $class();
-                $xfer += $this->$var->read($input);
-                break;
-              case TType::MAP:
-                $xfer += $this->_readMap($this->$var, $fspec, $input);
-                break;
-              case TType::LST:
-                $xfer += $this->_readList($this->$var, $fspec, $input, false);
-                break;
-              case TType::SET:
-                $xfer += $this->_readList($this->$var, $fspec, $input, true);
-                break;
+            case TType::STRUCT:
+              $class = $fspec['class'];
+              $this->$var = new $class();
+              $xfer += $this->$var->read($input);
+              break;
+            case TType::MAP:
+              $xfer += $this->_readMap($this->$var, $fspec, $input);
+              break;
+            case TType::LST:
+              $xfer += $this->_readList($this->$var, $fspec, $input, false);
+              break;
+            case TType::SET:
+              $xfer += $this->_readList($this->$var, $fspec, $input, true);
+              break;
             }
           }
         } else {
@@ -230,7 +236,8 @@ abstract class TBase {
     return $xfer;
   }
 
-  private function _writeMap($var, $spec, $output) {
+  private function _writeMap($var, $spec, $output)
+  {
     $xfer = 0;
     $ktype = $spec['ktype'];
     $vtype = $spec['vtype'];
@@ -251,36 +258,36 @@ abstract class TBase {
         $xfer += $output->$kwrite($key);
       } else {
         switch ($ktype) {
-          case TType::STRUCT:
-            $xfer += $key->write($output);
-            break;
-          case TType::MAP:
-            $xfer += $this->_writeMap($key, $kspec, $output);
-            break;
-          case TType::LST:
-            $xfer += $this->_writeList($key, $kspec, $output, false);
-            break;
-          case TType::SET:
-            $xfer += $this->_writeList($key, $kspec, $output, true);
-            break;
+        case TType::STRUCT:
+          $xfer += $key->write($output);
+          break;
+        case TType::MAP:
+          $xfer += $this->_writeMap($key, $kspec, $output);
+          break;
+        case TType::LST:
+          $xfer += $this->_writeList($key, $kspec, $output, false);
+          break;
+        case TType::SET:
+          $xfer += $this->_writeList($key, $kspec, $output, true);
+          break;
         }
       }
       if (isset($vwrite)) {
         $xfer += $output->$vwrite($val);
       } else {
         switch ($vtype) {
-          case TType::STRUCT:
-            $xfer += $val->write($output);
-            break;
-          case TType::MAP:
-            $xfer += $this->_writeMap($val, $vspec, $output);
-            break;
-          case TType::LST:
-            $xfer += $this->_writeList($val, $vspec, $output, false);
-            break;
-          case TType::SET:
-            $xfer += $this->_writeList($val, $vspec, $output, true);
-            break;
+        case TType::STRUCT:
+          $xfer += $val->write($output);
+          break;
+        case TType::MAP:
+          $xfer += $this->_writeMap($val, $vspec, $output);
+          break;
+        case TType::LST:
+          $xfer += $this->_writeList($val, $vspec, $output, false);
+          break;
+        case TType::SET:
+          $xfer += $this->_writeList($val, $vspec, $output, true);
+          break;
         }
       }
     }
@@ -289,7 +296,8 @@ abstract class TBase {
     return $xfer;
   }
 
-  private function _writeList($var, $spec, $output, $set = false) {
+  private function _writeList($var, $spec, $output, $set=false)
+  {
     $xfer = 0;
     $etype = $spec['etype'];
     $ewrite = null;
@@ -309,18 +317,18 @@ abstract class TBase {
         $xfer += $output->$ewrite($elem);
       } else {
         switch ($etype) {
-          case TType::STRUCT:
-            $xfer += $elem->write($output);
-            break;
-          case TType::MAP:
-            $xfer += $this->_writeMap($elem, $espec, $output);
-            break;
-          case TType::LST:
-            $xfer += $this->_writeList($elem, $espec, $output, false);
-            break;
-          case TType::SET:
-            $xfer += $this->_writeList($elem, $espec, $output, true);
-            break;
+        case TType::STRUCT:
+          $xfer += $elem->write($output);
+          break;
+        case TType::MAP:
+          $xfer += $this->_writeMap($elem, $espec, $output);
+          break;
+        case TType::LST:
+          $xfer += $this->_writeList($elem, $espec, $output, false);
+          break;
+        case TType::SET:
+          $xfer += $this->_writeList($elem, $espec, $output, true);
+          break;
         }
       }
     }
@@ -333,7 +341,8 @@ abstract class TBase {
     return $xfer;
   }
 
-  protected function _write($class, $spec, $output) {
+  protected function _write($class, $spec, $output)
+  {
     $xfer = 0;
     $xfer += $output->writeStructBegin($class);
     foreach ($spec as $fid => $fspec) {
@@ -346,18 +355,18 @@ abstract class TBase {
           $xfer += $output->$func($this->$var);
         } else {
           switch ($ftype) {
-            case TType::STRUCT:
-              $xfer += $this->$var->write($output);
-              break;
-            case TType::MAP:
-              $xfer += $this->_writeMap($this->$var, $fspec, $output);
-              break;
-            case TType::LST:
-              $xfer += $this->_writeList($this->$var, $fspec, $output, false);
-              break;
-            case TType::SET:
-              $xfer += $this->_writeList($this->$var, $fspec, $output, true);
-              break;
+          case TType::STRUCT:
+            $xfer += $this->$var->write($output);
+            break;
+          case TType::MAP:
+            $xfer += $this->_writeMap($this->$var, $fspec, $output);
+            break;
+          case TType::LST:
+            $xfer += $this->_writeList($this->$var, $fspec, $output, false);
+            break;
+          case TType::SET:
+            $xfer += $this->_writeList($this->$var, $fspec, $output, true);
+            break;
           }
         }
         $xfer += $output->writeFieldEnd();

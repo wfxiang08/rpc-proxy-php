@@ -28,7 +28,8 @@ use Thrift\Exception\TProtocolException;
 /**
  * Protocol base class module.
  */
-abstract class TProtocol {
+abstract class TProtocol
+{
   /**
    * Underlying transport
    *
@@ -39,7 +40,8 @@ abstract class TProtocol {
   /**
    * Constructor
    */
-  protected function __construct($trans) {
+  protected function __construct($trans)
+  {
     $this->trans_ = $trans;
   }
 
@@ -48,7 +50,8 @@ abstract class TProtocol {
    *
    * @return TTransport
    */
-  public function getTransport() {
+  public function getTransport()
+  {
     return $this->trans_;
   }
 
@@ -69,7 +72,7 @@ abstract class TProtocol {
   /**
    * Writes a struct header.
    *
-   * @param string $name Struct name
+   * @param string     $name Struct name
    * @throws TException on write error
    * @return int How many bytes written
    */
@@ -178,23 +181,25 @@ abstract class TProtocol {
    *
    * @param TType $type What type is it
    */
-  public function skip($type) {
+  public function skip($type)
+  {
     switch ($type) {
-      case TType::BOOL:
-        return $this->readBool($bool);
-      case TType::BYTE:
-        return $this->readByte($byte);
-      case TType::I16:
-        return $this->readI16($i16);
-      case TType::I32:
-        return $this->readI32($i32);
-      case TType::I64:
-        return $this->readI64($i64);
-      case TType::DOUBLE:
-        return $this->readDouble($dub);
-      case TType::STRING:
-        return $this->readString($str);
-      case TType::STRUCT: {
+    case TType::BOOL:
+      return $this->readBool($bool);
+    case TType::BYTE:
+      return $this->readByte($byte);
+    case TType::I16:
+      return $this->readI16($i16);
+    case TType::I32:
+      return $this->readI32($i32);
+    case TType::I64:
+      return $this->readI64($i64);
+    case TType::DOUBLE:
+      return $this->readDouble($dub);
+    case TType::STRING:
+      return $this->readString($str);
+    case TType::STRUCT:
+      {
         $result = $this->readStructBegin($name);
         while (true) {
           $result += $this->readFieldBegin($name, $ftype, $fid);
@@ -208,7 +213,8 @@ abstract class TProtocol {
 
         return $result;
       }
-      case TType::MAP: {
+    case TType::MAP:
+      {
         $result = $this->readMapBegin($keyType, $valType, $size);
         for ($i = 0; $i < $size; $i++) {
           $result += $this->skip($keyType);
@@ -218,7 +224,8 @@ abstract class TProtocol {
 
         return $result;
       }
-      case TType::SET: {
+    case TType::SET:
+      {
         $result = $this->readSetBegin($elemType, $size);
         for ($i = 0; $i < $size; $i++) {
           $result += $this->skip($elemType);
@@ -227,7 +234,8 @@ abstract class TProtocol {
 
         return $result;
       }
-      case TType::LST: {
+    case TType::LST:
+      {
         $result = $this->readListBegin($elemType, $size);
         for ($i = 0; $i < $size; $i++) {
           $result += $this->skip($elemType);
@@ -236,9 +244,9 @@ abstract class TProtocol {
 
         return $result;
       }
-      default:
-        throw new TProtocolException('Unknown field type: ' . $type,
-          TProtocolException::INVALID_DATA);
+    default:
+      throw new TProtocolException('Unknown field type: '.$type,
+                                   TProtocolException::INVALID_DATA);
     }
   }
 
@@ -246,31 +254,33 @@ abstract class TProtocol {
    * Utility for skipping binary data
    *
    * @param TTransport $itrans TTransport object
-   * @param int $type Field type
+   * @param int        $type   Field type
    */
-  public static function skipBinary($itrans, $type) {
+  public static function skipBinary($itrans, $type)
+  {
     switch ($type) {
-      case TType::BOOL:
-        return $itrans->readAll(1);
-      case TType::BYTE:
-        return $itrans->readAll(1);
-      case TType::I16:
-        return $itrans->readAll(2);
-      case TType::I32:
-        return $itrans->readAll(4);
-      case TType::I64:
-        return $itrans->readAll(8);
-      case TType::DOUBLE:
-        return $itrans->readAll(8);
-      case TType::STRING:
-        $len = unpack('N', $itrans->readAll(4));
-        $len = $len[1];
-        if ($len > 0x7fffffff) {
-          $len = 0 - (($len - 1) ^ 0xffffffff);
-        }
+    case TType::BOOL:
+      return $itrans->readAll(1);
+    case TType::BYTE:
+      return $itrans->readAll(1);
+    case TType::I16:
+      return $itrans->readAll(2);
+    case TType::I32:
+      return $itrans->readAll(4);
+    case TType::I64:
+      return $itrans->readAll(8);
+    case TType::DOUBLE:
+      return $itrans->readAll(8);
+    case TType::STRING:
+      $len = unpack('N', $itrans->readAll(4));
+      $len = $len[1];
+      if ($len > 0x7fffffff) {
+        $len = 0 - (($len - 1) ^ 0xffffffff);
+      }
 
-        return 4 + $itrans->readAll($len);
-      case TType::STRUCT: {
+      return 4 + $itrans->readAll($len);
+    case TType::STRUCT:
+      {
         $result = 0;
         while (true) {
           $ftype = 0;
@@ -288,7 +298,8 @@ abstract class TProtocol {
 
         return $result;
       }
-      case TType::MAP: {
+    case TType::MAP:
+      {
         // Ktype
         $data = $itrans->readAll(1);
         $arr = unpack('c', $data);
@@ -312,8 +323,9 @@ abstract class TProtocol {
 
         return $result;
       }
-      case TType::SET:
-      case TType::LST: {
+    case TType::SET:
+    case TType::LST:
+      {
         // Vtype
         $data = $itrans->readAll(1);
         $arr = unpack('c', $data);
@@ -332,9 +344,9 @@ abstract class TProtocol {
 
         return $result;
       }
-      default:
-        throw new TProtocolException('Unknown field type: ' . $type,
-          TProtocolException::INVALID_DATA);
+    default:
+      throw new TProtocolException('Unknown field type: '.$type,
+                                   TProtocolException::INVALID_DATA);
     }
   }
 }

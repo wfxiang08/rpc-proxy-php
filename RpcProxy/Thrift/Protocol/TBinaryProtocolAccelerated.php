@@ -27,13 +27,11 @@ use Thrift\Transport\TBufferedTransport;
 /**
  * Accelerated binary protocol: used in conjunction with the thrift_protocol
  * extension for faster deserialization
- * TBinaryProtocolAccelerated 本身和 TBinaryProtocol 没有本质区别, 它们的区别在于"身份"
- * 例如:
- * $bin_accel = ($this->output_ instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_write_binary');
- * 身份不一样, 在具体的Args进行序列化,反序列化时采用的策略不一样
  */
-class TBinaryProtocolAccelerated extends TBinaryProtocol {
-  public function __construct($trans, $strictRead = false, $strictWrite = true) {
+class TBinaryProtocolAccelerated extends TBinaryProtocol
+{
+  public function __construct($trans, $strictRead=false, $strictWrite=true)
+  {
     // If the transport doesn't implement putBack, wrap it in a
     // TBufferedTransport (which does)
 
@@ -56,12 +54,12 @@ class TBinaryProtocolAccelerated extends TBinaryProtocol {
     }
     parent::__construct($trans, $strictRead, $strictWrite);
   }
-
-  public function isStrictRead() {
+  public function isStrictRead()
+  {
     return $this->strictRead_;
   }
-
-  public function isStrictWrite() {
+  public function isStrictWrite()
+  {
     return $this->strictWrite_;
   }
 }

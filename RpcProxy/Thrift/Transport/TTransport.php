@@ -22,7 +22,6 @@
 
 namespace Thrift\Transport;
 
-use Thrift\Exception\TTransportException;
 use Thrift\Factory\TStringFuncFactory;
 
 /**
@@ -30,7 +29,8 @@ use Thrift\Factory\TStringFuncFactory;
  *
  * @package thrift.transport
  */
-abstract class TTransport {
+abstract class TTransport
+{
   /**
    * Whether this transport is open.
    *
@@ -53,7 +53,7 @@ abstract class TTransport {
   /**
    * Read some data into the array.
    *
-   * @param int $len How much to read
+   * @param int    $len How much to read
    * @return string The data that has been read
    * @throws TTransportException if cannot read any more data
    */
@@ -65,7 +65,8 @@ abstract class TTransport {
    * @return string The data, of exact length
    * @throws TTransportException if cannot read data
    */
-  public function readAll($len) {
+  public function readAll($len)
+  {
     // return $this->read($len);
 
     $data = '';
@@ -80,7 +81,7 @@ abstract class TTransport {
   /**
    * Writes the given data out.
    *
-   * @param string $buf The data to write
+   * @param string $buf  The data to write
    * @throws TTransportException if writing fails
    */
   abstract public function write($buf);
@@ -90,6 +91,5 @@ abstract class TTransport {
    *
    * @throws TTransportException if a writing error occurs
    */
-  public function flush() {
-  }
+  public function flush() {}
 }

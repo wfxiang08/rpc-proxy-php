@@ -10,7 +10,8 @@ use Thrift\Factory\TProtocolFactory;
  *
  * @package thrift.server
  */
-abstract class TServer {
+abstract class TServer
+{
   /**
    * Processor to handle new clients
    *

@@ -33,38 +33,41 @@ use Thrift\Factory\TStringFuncFactory;
  *
  * @package thrift.transport
  */
-class TMemoryBuffer extends TTransport {
+class TMemoryBuffer extends TTransport
+{
   /**
    * Constructor. Optionally pass an initial value
    * for the buffer.
    */
-  public function __construct($buf = '') {
+  public function __construct($buf = '')
+  {
     $this->buf_ = $buf;
   }
 
   protected $buf_ = '';
 
-  public function isOpen() {
+  public function isOpen()
+  {
     return true;
   }
 
-  public function open() {
-  }
+  public function open() {}
 
-  public function close() {
-  }
+  public function close() {}
 
-  public function write($buf) {
+  public function write($buf)
+  {
     $this->buf_ .= $buf;
   }
 
-  public function read($len) {
+  public function read($len)
+  {
     $bufLength = TStringFuncFactory::create()->strlen($this->buf_);
 
     if ($bufLength === 0) {
-      throw new TTransportException('TMemoryBuffer: Could not read '.
-        $len.' bytes from buffer.',
-        TTransportException::UNKNOWN);
+      throw new TTransportException('TMemoryBuffer: Could not read ' .
+                                    $len . ' bytes from buffer.',
+                                    TTransportException::UNKNOWN);
     }
 
     if ($bufLength <= $len) {
@@ -80,15 +83,18 @@ class TMemoryBuffer extends TTransport {
     return $ret;
   }
 
-  public function getBuffer() {
+  public function getBuffer()
+  {
     return $this->buf_;
   }
 
-  public function available() {
+  public function available()
+  {
     return TStringFuncFactory::create()->strlen($this->buf_);
   }
 
-  public function putBack($data) {
+  public function putBack($data)
+  {
     $this->buf_ = $data.$this->buf_;
   }
 }

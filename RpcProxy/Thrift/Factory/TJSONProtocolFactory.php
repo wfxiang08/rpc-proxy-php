@@ -27,11 +27,14 @@ use Thrift\Protocol\TJSONProtocol;
 /**
  * JSON Protocol Factory
  */
-class TJSONProtocolFactory implements TProtocolFactory {
-  public function __construct() {
-  }
+class TJSONProtocolFactory implements TProtocolFactory
+{
+    public function __construct()
+    {
+    }
 
-  public function getProtocol($trans) {
-    return new TJSONProtocol($trans);
-  }
+    public function getProtocol($trans)
+    {
+        return new TJSONProtocol($trans);
+    }
 }
