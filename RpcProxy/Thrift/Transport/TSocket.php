@@ -207,7 +207,8 @@ class TSocket extends TTransport {
     }
 
     $host = $this->host_;
-    if (strpos($this->host_, ":") === false) {
+    // 如果是路径, 则认为是unix domain
+    if (strncmp($this->host_, "/", 1) === 0) {
       $host = "unix://".$this->host_;
       // echo "Host: ${host}\n";
       // Unix Domain Socket直接忽略 port, 强制设置为null
